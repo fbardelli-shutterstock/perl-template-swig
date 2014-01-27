@@ -6,6 +6,7 @@ use warnings;
 use Carp;
 
 our $VERSION = '0.05';
+my $_swig_source;
 
 use File::Slurp qw(read_file);
 use JavaScript::V8;
@@ -58,12 +59,7 @@ EOT
 		});
 	}
 
-	my $start_pos = tell DATA;
-	local $/ = undef;
-	my $swig_source = <DATA>;
-	seek DATA, $start_pos, 0;
-
-	$self->{context}->eval($swig_source);
+	$self->{context}->eval($_swig_source);
 	confess $@ if $@;
 }
 
@@ -230,7 +226,7 @@ This module is free software; you can redistribute it and/or modify it under the
 
 =cut
 
-__DATA__
+$_swig_source = <<'EOJ';
 
 var templates = {};
 
@@ -3581,3 +3577,5 @@ return module.exports;
 })();
 return swig;
 })();
+EOJ
+
